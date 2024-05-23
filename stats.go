@@ -11,7 +11,7 @@ import (
 
 const daysInLastSixMonths = 183
 const outOfRange = 99999
-const weekInLastSixMonths = 26
+const weeksInLastSixMonths = 26
 
 type column []int
 
@@ -106,6 +106,7 @@ func processRepositories(email string) map[int]int {
 func calcOffset() int {
 	var offset int
 	weekday := time.Now().Weekday()
+
 	switch weekday {
 	case time.Sunday:
 		offset = 7
@@ -127,7 +128,7 @@ func calcOffset() int {
 }
 
 // printCell given a cell value prints it with a different format
-// based on the value amount, and on the 'today' flag
+// based on the value amount, and on the `today` flag.
 func printCell(val int, today bool) {
 	escape := "\033[0;37;30m"
 	switch {
@@ -140,15 +141,15 @@ func printCell(val int, today bool) {
 	}
 
 	if today {
-		escape += "\033[1;37;45m"
+		escape = "\033[1;37;45m"
 	}
 
 	if val == 0 {
-		fmt.Printf(escape + " -" + "\033[m")
+		fmt.Printf(escape + "  - " + "\033[0m")
 		return
 	}
 
-	str := " %d "
+	str := "  %d "
 	switch {
 	case val >= 10:
 		str = " %d "
@@ -183,6 +184,7 @@ func sortMapIntoSlice(m map[int]int) []int {
 func buildCols(keys []int, commits map[int]int) map[int]column {
 	cols := make(map[int]column)
 	col := column{}
+
 	for _, k := range keys {
 		week := int(k / 7) //26,25...1
 		dayInWeek := k % 7 //0,1,2,3,4,5,6
@@ -204,12 +206,12 @@ func buildCols(keys []int, commits map[int]int) map[int]column {
 func printCells(cols map[int]column) {
 	printMonths()
 	for j := 6; j >= 0; j-- {
-		for i := weekInLastSixMonths + 1; i >= 0; i-- {
-			if i == weekInLastSixMonths+1 {
+		for i := weeksInLastSixMonths + 1; i >= 0; i-- {
+			if i == weeksInLastSixMonths+1 {
 				printDayCol(j)
 			}
 			if col, ok := cols[i]; ok {
-				//special day
+				//special case today
 				if i == 0 && j == calcOffset()-1 {
 					printCell(col[j], true)
 					continue
@@ -231,7 +233,7 @@ func printCells(cols map[int]column) {
 func printMonths() {
 	week := getBeginningOfDay(time.Now().Add(-(daysInLastSixMonths * time.Hour * 24)))
 	month := week.Month()
-	fmt.Printf("	")
+	fmt.Printf("		")
 	for {
 		if week.Month() != month {
 			fmt.Printf("%s ", week.Month().String()[:3])
@@ -253,13 +255,20 @@ func printMonths() {
 func printDayCol(day int) {
 	out := "	"
 	switch day {
+	//case 0:
+	//	out = " Sun "
 	case 1:
 		out = " Mon "
+	//case 2:
+	//	out = " Tue "
 	case 3:
 		out = " Wed "
+	//case 4:
+	//	out = " Thu "
 	case 5:
 		out = " Fri "
+		//case 6:
+		//	out = " Sat "
 	}
-
-	print(out)
+	fmt.Printf(out)
 }
