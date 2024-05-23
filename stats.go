@@ -231,15 +231,15 @@ func printCells(cols map[int]column) {
 // printMonths prints the month names in the first line, determining when the month
 // changed between switching weeks
 func printMonths() {
-	week := getBeginningOfDay(time.Now().Add(-(daysInLastSixMonths * time.Hour * 24)))
+	week := getBeginningOfDay(time.Now()).Add(-(daysInLastSixMonths * time.Hour * 24))
 	month := week.Month()
-	fmt.Printf("		")
+	fmt.Printf("         ")
 	for {
 		if week.Month() != month {
 			fmt.Printf("%s ", week.Month().String()[:3])
 			month = week.Month()
 		} else {
-			fmt.Printf("	")
+			fmt.Printf("    ")
 		}
 
 		week = week.Add(7 * time.Hour * 24)
@@ -253,22 +253,23 @@ func printMonths() {
 // printDayCol given the day number (0 is Sunday) prints the day name,
 // alternating the rows (prints just 2,4,6)
 func printDayCol(day int) {
-	out := "	"
+	out := "     "
 	switch day {
-	//case 0:
-	//	out = " Sun "
+	case 0:
+		out = " Sun "
 	case 1:
 		out = " Mon "
-	//case 2:
-	//	out = " Tue "
+	case 2:
+		out = " Tue "
 	case 3:
 		out = " Wed "
-	//case 4:
-	//	out = " Thu "
+	case 4:
+		out = " Thu "
 	case 5:
 		out = " Fri "
-		//case 6:
-		//	out = " Sat "
+	case 6:
+		out = " Sat "
 	}
-	fmt.Printf(out)
+
+	print(out)
 }
