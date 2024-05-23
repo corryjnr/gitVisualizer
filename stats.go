@@ -10,6 +10,8 @@ import (
 )
 
 const daysInLastSixMonths = 183
+const daysInYear = 366
+const weeksInYear = 52
 const outOfRange = 99999
 const weeksInLastSixMonths = 26
 
@@ -35,32 +37,32 @@ func countDaysSinceDate(date time.Time) int {
 	for date.Before(now) {
 		date = date.Add(time.Hour * 24)
 		days++
-		if days > daysInLastSixMonths {
+		if days > daysInYear {
 			return outOfRange
 		}
 	}
 	return days
 }
 
-// fillCommits given a repository found in 'path', gets the commits and
-// puts them in the 'commits' map, returning it when completed
+// fillCommits given a repository found in `path`, gets the commits and
+// puts them in the `commits` map, returning it when completed
 func fillCommits(email string, path string, commits map[int]int) map[int]int {
-	//instantiate a git repo object path
+	// instantiate a git repo object from path
 	repo, err := git.PlainOpen(path)
 	if err != nil {
 		panic(err)
 	}
-	//get the HEAD reference
+	// get the HEAD reference
 	ref, err := repo.Head()
 	if err != nil {
 		panic(err)
 	}
-	//get the commits history starting from HEAD
+	// get the commits history starting from HEAD
 	iterator, err := repo.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
 		panic(err)
 	}
-	//iterate the commits
+	// iterate the commits
 	offset := calcOffset()
 	err = iterator.ForEach(func(c *object.Commit) error {
 		daysAgo := countDaysSinceDate(c.Author.When) + offset
